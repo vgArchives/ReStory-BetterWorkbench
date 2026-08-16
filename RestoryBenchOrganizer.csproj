@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>RestoryBenchOrganizer</AssemblyName>
+    <RootNamespace>RestoryBenchOrganizer</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Version>1.0.0</Version>
+    <!-- Unity ships its own facades; don't drag in NuGet reference assemblies. -->
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <NoWarn>$(NoWarn);CS0436</NoWarn>
+
+    <GameDir>A:\Program Files (x86)\Steam\steamapps\common\Restory</GameDir>
+    <Managed>$(GameDir)\Restory_Data\Managed</Managed>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="$(GameDir)\BepInEx\core\BepInEx.dll" Private="false" />
+    <Reference Include="$(GameDir)\BepInEx\core\0Harmony.dll" Private="false" />
+    <Reference Include="$(Managed)\mscorlib.dll" Private="false" />
+    <Reference Include="$(Managed)\netstandard.dll" Private="false" />
+    <Reference Include="$(Managed)\System.dll" Private="false" />
+    <Reference Include="$(Managed)\System.Core.dll" Private="false" />
+    <Reference Include="$(Managed)\UnityEngine*.dll" Private="false" />
+    <Reference Include="$(Managed)\Unity.TextMeshPro.dll" Private="false" />
+    <!-- Rewired KeyboardKeyCode, for looking up the game's own key glyph sprites. -->
+    <Reference Include="$(Managed)\Rewired_Core.dll" Private="false" />
+    <!-- ElementInfo -> RestoryEntityInfoBase -> Odin's SerializedScriptableObject. -->
+    <Reference Include="$(Managed)\Sirenix.Serialization.dll" Private="false" />
+    <Reference Include="$(Managed)\Restory.Assembly.dll" Private="false" />
+    <Reference Include="$(Managed)\Mandragora.Helpers.Assembly.dll" Private="false" />
+  </ItemGroup>
+
+  <!-- Automatic deploy the build in the correct path. -->
+  <Target Name="Deploy" AfterTargets="Build">
+    <Copy SourceFiles="$(TargetPath)"
+          DestinationFolder="$(GameDir)\BepInEx\plugins\$(AssemblyName)\" />
+    <Message Importance="high" Condition="'$(Configuration)' == 'Debug'"
+             Text="Deployed $(AssemblyName).dll -> BepInEx\plugins\$(AssemblyName)\ [DEBUG - dev logs ON]" />
+    <Message Importance="high" Condition="'$(Configuration)' != 'Debug'"
+             Text="Deployed $(AssemblyName).dll -> BepInEx\plugins\$(AssemblyName)\ [RELEASE - dev logs stripped]" />
+  </Target>
+
+</Project>
