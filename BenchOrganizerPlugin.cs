@@ -35,8 +35,12 @@ public class BenchOrganizerPlugin : BaseUnityPlugin
         AddSectionSeparators();
         new Harmony(PluginGuid).PatchAll();
 
-        Log.LogInfo(BenchPacker.SelfCheck()
-            ? "Loaded. Self-check passed)."
+        bool hasPackerPassed = BenchPacker.SelfCheck();
+        bool hasSorterPassed = NotepadPartsSorter.SelfCheck();
+        bool haveChecksPassed = hasPackerPassed && hasSorterPassed;
+
+        Log.LogInfo(haveChecksPassed
+            ? "Loaded. Self-check passed."
             : "Loaded. SELF-CHECK FAILED.");
     }
 
