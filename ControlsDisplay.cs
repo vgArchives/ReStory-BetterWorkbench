@@ -90,6 +90,14 @@ internal static class ControlsDisplay
             new Vector3(mirroredX + outwardOffset, _displayHome.y, _displayHome.z);
     }
 
+    internal static void DisableInheritedLocalization(GameObject clone)
+    {
+        foreach (GUI_LocalisedText localizedText in clone.GetComponentsInChildren<GUI_LocalisedText>(true))
+        {
+            localizedText.IsEnabled = false;
+        }
+    }
+
     [HarmonyPostfix]
     [HarmonyPatch(typeof(WorkSurface), nameof(WorkSurface.ToggleDisassembleControlsAdvices))]
     private static void PositionOnShow(bool isActive)
@@ -196,14 +204,6 @@ internal static class ControlsDisplay
         label = rowLabel;
         keyLabel = PutKeyNameInIconSlot(icon.transform, rowLabel);
         return true;
-    }
-
-    private static void DisableInheritedLocalization(GameObject clone)
-    {
-        foreach (GUI_LocalisedText localizedText in clone.GetComponentsInChildren<GUI_LocalisedText>(true))
-        {
-            localizedText.IsEnabled = false;
-        }
     }
 
     private static TMP_Text PutKeyNameInIconSlot(Transform iconSlot, TMP_Text rowLabel)
