@@ -1,4 +1,3 @@
-using BepInEx.Logging;
 using FMODUnity;
 using HarmonyLib;
 using Restory.Audio;
@@ -26,8 +25,6 @@ internal static class NotepadSectionCollapse
     private static IAudioPlayerService _audioPlayer;
     private static EventReference _clickSound;
 
-    private static ManualLogSource Log => BetterWorkbenchPlugin.Log;
-
     private static bool Prepare()
     {
         bool hasEveryField = AccessTools.Field(typeof(GUI_NotepadElementsPanelView), "installedElementsContainer") != null
@@ -40,9 +37,9 @@ internal static class NotepadSectionCollapse
         if (hasEveryField)
             return true;
 
-        Log.LogWarning("Notepad section collapsing is disabled: GUI_NotepadElementsPanelView is missing a "
-                       + "container or count field, most likely renamed by a game update. "
-                       + "Bench organizing and parts sorting are unaffected.");
+        Log.Warning("Notepad section collapsing is disabled: GUI_NotepadElementsPanelView is missing a "
+                    + "container or count field, most likely renamed by a game update. "
+                    + "Bench organizing and parts sorting are unaffected.");
 
         return false;
     }
@@ -145,7 +142,7 @@ internal static class NotepadSectionCollapse
 
         if (_audioPlayer == null || _clickSound.IsNull)
         {
-            BetterWorkbenchPlugin.LogDebug("Notepad collapse click sound is unavailable.");
+            Log.Debug("Notepad collapse click sound is unavailable.");
         }
     }
 
@@ -197,7 +194,7 @@ internal static class NotepadSectionCollapse
                 _scroll.verticalNormalizedPosition = 1f;
             }
 
-            BetterWorkbenchPlugin.LogDebug($"Notepad section {(_isCollapsed ? "collapsed" : "expanded")}.");
+            Log.Debug($"Notepad section {(_isCollapsed ? "collapsed" : "expanded")}.");
         }
     }
 }

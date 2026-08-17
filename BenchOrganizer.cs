@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using BepInEx.Logging;
 using HarmonyLib;
 using Restory.Constants;
 using Restory.Data.Elements;
@@ -33,15 +32,13 @@ internal static class BenchOrganizer
     private static DisassembleStateMachine _stateMachine;
     private static DisassembleGameMode _gameMode;
 
-    private static ManualLogSource Log => BetterWorkbenchPlugin.Log;
-
     public static void Organize() => Organize(BetterWorkbenchPlugin.Anchor.Value);
 
     public static void Organize(BenchAnchorSide anchor)
     {
         if (!IsReady(out string reason))
         {
-            BetterWorkbenchPlugin.LogDebug($"Organize skipped: {reason}.");
+            Log.Debug($"Organize skipped: {reason}.");
             return;
         }
 
@@ -57,12 +54,12 @@ internal static class BenchOrganizer
 
         if (parts.Count < draggableParts.Count)
         {
-            Log.LogWarning($"Skipping {draggableParts.Count - parts.Count} part(s) with no placement data.");
+            Log.Warning($"Skipping {draggableParts.Count - parts.Count} part(s) with no placement data.");
         }
 
         if (parts.Count == 0)
         {
-            BetterWorkbenchPlugin.LogDebug("Organize skipped: no loose parts on the bench.");
+            Log.Debug("Organize skipped: no loose parts on the bench.");
             return;
         }
 
@@ -118,7 +115,7 @@ internal static class BenchOrganizer
                 }
                 else
                 {
-                    Log.LogWarning($"No free spot for {part.Info.ID}; left where it was.");
+                    Log.Warning($"No free spot for {part.Info.ID}; left where it was.");
                     strandedCount++;
                 }
 
@@ -135,7 +132,7 @@ internal static class BenchOrganizer
 
         int screwsReturned = ReturnStrayScrewsToBin();
 
-        BetterWorkbenchPlugin.LogDebug(
+        Log.Debug(
             $"{anchor}: {result.Packed} packed, {result.Unplaced.Count} overflow, {strandedCount} stranded, " +
             $"{screwsReturned} screws re-binned (slack {BetterWorkbenchPlugin.ShelfSlack.Value:F2} -> " +
             $"row width {usedRowWidth:F2}, pass {passNumber} of {candidateWidths.Length}).");

@@ -1,4 +1,3 @@
-using BepInEx.Logging;
 using HarmonyLib;
 using Restory.Data.Elements;
 using Restory.Gameplay.Elements;
@@ -25,8 +24,6 @@ internal static class ControlsDisplay
     private static bool _isShown;
     private static WorkSurface _surface;
 
-    private static ManualLogSource Log => BetterWorkbenchPlugin.Log;
-
     internal static void AddRows(WorkSurface workSurface)
     {
         const string OrganizeRowName = "OrganizeControlsRow";
@@ -43,7 +40,7 @@ internal static class ControlsDisplay
 
         if (rows == null || rows.childCount == 0)
         {
-            Log.LogWarning("Workbench controls display rows not found; skipping the hint rows.");
+            Log.Warning("Workbench controls display rows not found; skipping the hint rows.");
             return;
         }
 
@@ -65,7 +62,7 @@ internal static class ControlsDisplay
             out _highlightsLabel, out _highlightsKeyLabel);
 
         RefreshRows();
-        BetterWorkbenchPlugin.LogDebug("Controls display rows added.");
+        Log.Debug("Controls display rows added.");
     }
 
     internal static void PlaceAwayFrom(BenchAnchorSide partsSide, Bounds bench)
@@ -194,7 +191,7 @@ internal static class ControlsDisplay
 
         if (rowLabel == null || icon == null)
         {
-            Log.LogWarning($"Cloned controls row {rowName} is missing its label or icon; leaving it as-is.");
+            Log.Warning($"Cloned controls row {rowName} is missing its label or icon; leaving it as-is.");
             Object.Destroy(row);
             return false;
         }

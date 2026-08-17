@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using BepInEx.Logging;
 using HarmonyLib;
 using Restory.Data.Elements.Condition;
 using Restory.Gameplay.Elements;
@@ -17,8 +16,6 @@ internal static class NotepadPartsSorter
     private const int SolderingRank = 1;
     private const int CleaningRank = 2;
     private const int ReadyRank = 3;
-
-    private static ManualLogSource Log => BetterWorkbenchPlugin.Log;
 
     internal static bool SelfCheck()
     {
@@ -51,7 +48,7 @@ internal static class NotepadPartsSorter
             && AccessTools.Field(typeof(GUI_NotepadElementsPanel), "cachedPlacedElements") != null)
             return true;
 
-        Log.LogError("Notepad parts sorting is disabled: GUI_NotepadElementsPanel.UpdateElements or "
+        Log.Error("Notepad parts sorting is disabled: GUI_NotepadElementsPanel.UpdateElements or "
             + "cachedPlacedElements is missing, most likely renamed by a game update. "
             + "Bench organizing is unaffected.");
 
@@ -95,7 +92,7 @@ internal static class NotepadPartsSorter
         if (rank == expectedRank)
             return true;
 
-        Log.LogError($"Self-check FAILED: {caseName} ranked {rank}, expected {expectedRank}.");
+        Log.Error($"Self-check FAILED: {caseName} ranked {rank}, expected {expectedRank}.");
 
         return false;
     }

@@ -28,7 +28,7 @@ internal static class SurfaceHighlighter
     {
         IsOn = !IsOn;
         RefreshAll();
-        BetterWorkbenchPlugin.LogDebug($"Bench highlights {(IsOn ? "on" : "off")}.");
+        Log.Debug($"Bench highlights {(IsOn ? "on" : "off")}.");
     }
 
     internal static void Reset(string reason)
@@ -37,7 +37,7 @@ internal static class SurfaceHighlighter
             return;
 
         IsOn = false;
-        BetterWorkbenchPlugin.LogDebug($"Bench highlights off ({reason}).");
+        Log.Debug($"Bench highlights off ({reason}).");
     }
 
     internal static void LightElement(ElementBase element)

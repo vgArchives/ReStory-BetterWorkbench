@@ -1,50 +1,85 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using BepInEx;
-using BepInEx.Configuration;
-using BepInEx.Logging;
-using HarmonyLib;
 using UnityEngine;
 
 namespace ReStoryBetterWorkbench;
 
-[BepInPlugin(PluginGuid, "ReStory Better Workbench", "1.0.0")]
-public class BetterWorkbenchPlugin : BaseUnityPlugin
+// Loader-neutral half of the entry point. The BepInEx and MelonLoader halves are the partials next
+// to this file; the MELONLOADER compile symbol picks exactly one of them. Everything both loaders
+// must agree on - setting names, defaults, ranges and descriptions - lives here so they can't drift.
+public partial class BetterWorkbenchPlugin
 {
     public const string PluginGuid = "com.archives.restorybetterworkbench";
-    private const string SectionSeparator = "# ----------------------------------------------------------------";
+    internal const string PluginName = "ReStory Better Workbench";
+    internal const string PluginVersion = "1.1.0";
+    internal const string PluginAuthor = "Archives";
+
+    internal const string OrganizeKeyName = "OrganizeKey";
+    internal const string HighlightsKeyName = "HighlightsKey";
+    internal const string AnchorName = "PackAgainstSide";
+    internal const string CellGapName = "CellGap";
+    internal const string SafetyMarginName = "SafetyMargin";
+    internal const string ShelfSlackName = "ShelfSlack";
+    internal const string ControlsDisplayOffsetName = "ControlsDisplayOffset";
+    internal const string TopMarginName = "TopMargin";
+    internal const string SideMarginName = "SideMargin";
+
+    internal const string OrganizeKeyPurpose =
+        "Packs the loose parts on the bench. Hold Shift to pack against the opposite side.";
+    internal const string HighlightsKeyPurpose =
+        "Toggles the outline highlight on every part lying on the bench.";
+    internal const string AnchorPurpose = "Bench side the parts are packed against.";
+    internal const string CellGapPurpose = "Gap between packed parts, in meters.";
+    internal const string SafetyMarginPurpose =
+        "Extra collision padding safety around each part spot, in meters.";
+    internal const string ShelfSlackPurpose = "How loosely the packed block spreads over the bench.";
+    internal const string ControlsDisplayOffsetPurpose =
+        "How far the controls UI display position is adjusted when switching sides.";
+    internal const string TopMarginPurpose = "Margin kept clear along the top edge of the bench.";
+    internal const string SideMarginPurpose =
+        "Margin kept clear along both the left and right edges of the bench.";
+
+    internal const KeyCode DefaultOrganizeKey = KeyCode.F;
+    internal const KeyCode DefaultHighlightsKey = KeyCode.G;
+    internal const BenchAnchorSide DefaultAnchor = BenchAnchorSide.Left;
+    internal const float DefaultCellGap = 0.025f;
+    internal const float MaxCellGap = 0.1f;
+    internal const float DefaultSafetyMargin = 0.005f;
+    internal const float MaxSafetyMargin = 0.05f;
+    internal const float DefaultShelfSlack = 1f;
+    internal const float MinShelfSlack = 1f;
+    internal const float MaxShelfSlack = 2.5f;
+    internal const float DefaultControlsDisplayOffset = 0.07f;
+    internal const float MaxControlsDisplayOffset = 0.4f;
+    internal const float MaxMargin = 0.4f;
+
+    internal static readonly float[] DefaultTopMargins = { 0.05f, 0.10f };
+    internal static readonly float[] DefaultSideMargins = { 0.05f, 0.00f };
 
     internal static KeyCode OrganizeKey;
     internal static KeyCode HighlightsKey;
-    internal static ConfigEntry<BenchAnchorSide> Anchor;
-    internal static ConfigEntry<float> CellGap;
-    internal static ConfigEntry<float> SafetyMargin;
-    internal static ConfigEntry<float> ShelfSlack;
-    internal static ConfigEntry<float> ControlsDisplayOffset;
-    internal static ManualLogSource Log;
 
-    private static ConfigEntry<float>[] _topMarginsPerAnchor;
-    private static ConfigEntry<float>[] _sideMarginsPerAnchor;
+    internal static float TopMarginFor(BenchAnchorSide anchor) => _topMarginsPerAnchor[(int)anchor].Value;
 
-    private void Awake()
+    internal static float SideMarginFor(BenchAnchorSide anchor) => _sideMarginsPerAnchor[(int)anchor].Value;
+
+    internal static string HotkeyDescription(string purpose) =>
+        $"{purpose} Takes any Unity KeyCode name, e.g. F, G, R, Tab, F6, Keypad5.";
+
+    internal static string MarginDescription(string purpose, BenchAnchorSide anchor) =>
+        $"{purpose} Applies when packing against the {anchor} side.";
+
+    private static void RunSelfChecks()
     {
-        Log = Logger;
-
-        BindConfig();
-        AddSectionSeparators();
-        new Harmony(PluginGuid).PatchAll();
-
         bool hasPackerPassed = BenchPacker.SelfCheck();
         bool hasSorterPassed = NotepadPartsSorter.SelfCheck();
         bool haveChecksPassed = hasPackerPassed && hasSorterPassed;
 
-        Log.LogInfo(haveChecksPassed
+        Log.Info(haveChecksPassed
             ? "Loaded. Self-check passed."
             : "Loaded. SELF-CHECK FAILED.");
     }
 
-    private void Update()
+    private static void HandleHotkeys()
     {
         if (Input.GetKeyDown(OrganizeKey))
         {
@@ -60,92 +95,15 @@ public class BetterWorkbenchPlugin : BaseUnityPlugin
         }
     }
 
-    [System.Diagnostics.Conditional("DEBUG")]
-    internal static void LogDebug(string message) => Log.LogInfo(message);
-
-    internal static float TopMarginFor(BenchAnchorSide anchor) => _topMarginsPerAnchor[(int)anchor].Value;
-
-    internal static float SideMarginFor(BenchAnchorSide anchor) => _sideMarginsPerAnchor[(int)anchor].Value;
-
     private static BenchAnchorSide Opposite(BenchAnchorSide anchor) =>
         anchor == BenchAnchorSide.Left ? BenchAnchorSide.Right : BenchAnchorSide.Left;
 
-    private void BindConfig()
+    private static KeyCode ParseHotkey(string settingName, string configuredKey, KeyCode defaultKey)
     {
-        OrganizeKey = BindHotkey("OrganizeKey", KeyCode.F,
-            "Packs the loose parts on the bench. Hold Shift to pack against the opposite side.");
-        HighlightsKey = BindHotkey("HighlightsKey", KeyCode.G,
-            "Toggles the outline highlight on every part lying on the bench.");
-        Anchor = Config.Bind("Layout", "PackAgainstSide", BenchAnchorSide.Left,
-            "Bench side the parts are packed against.");
-        CellGap = Config.Bind("Layout", "CellGap", 0.025f, new ConfigDescription(
-            "Gap between packed parts, in meters.",
-            new AcceptableValueRange<float>(0f, 0.1f)));
-        SafetyMargin = Config.Bind("Layout", "SafetyMargin", 0.005f, new ConfigDescription(
-            "Extra collision padding safety around each part spot, in meters.",
-            new AcceptableValueRange<float>(0f, 0.05f)));
-        ShelfSlack = Config.Bind("Layout", "ShelfSlack", 1f, new ConfigDescription(
-            "How loosely the packed block spreads over the bench.",
-            new AcceptableValueRange<float>(1f, 2.5f)));
-        ControlsDisplayOffset = Config.Bind("Layout", "ControlsDisplayOffset", 0.07f, new ConfigDescription(
-            "How far the controls UI display position is adjusted when switching sides.",
-            new AcceptableValueRange<float>(0f, 0.4f)));
-
-        _topMarginsPerAnchor = BindMarginPerAnchor("TopMargin", new[] { 0.05f, 0.10f },
-            "Margin kept clear along the top edge of the bench.");
-        _sideMarginsPerAnchor = BindMarginPerAnchor("SideMargin", new[] { 0.05f, 0.00f },
-            "Margin kept clear along both the left and right edges of the bench.");
-    }
-
-    private void AddSectionSeparators()
-    {
-        List<string> lines = new List<string>(File.ReadAllLines(Config.ConfigFilePath));
-        bool hasChanged = false;
-
-        for (int lineIndex = 0; lineIndex < lines.Count; lineIndex++)
-        {
-            bool isUnseparatedSectionHeader = lines[lineIndex].StartsWith("[")
-                                              && (lineIndex == 0 || lines[lineIndex - 1] != SectionSeparator);
-
-            if (!isUnseparatedSectionHeader)
-                continue;
-
-            lines.Insert(lineIndex, SectionSeparator);
-            lineIndex++;
-            hasChanged = true;
-        }
-
-        if (hasChanged)
-        {
-            File.WriteAllLines(Config.ConfigFilePath, lines);
-        }
-    }
-
-    private KeyCode BindHotkey(string settingName, KeyCode defaultKey, string purpose)
-    {
-        ConfigEntry<string> entry = Config.Bind("Hotkeys", settingName, defaultKey.ToString(),
-            $"{purpose} Takes any Unity KeyCode name, e.g. F, G, R, Tab, F6, Keypad5.");
-
-        if (Enum.TryParse(entry.Value, true, out KeyCode key))
+        if (Enum.TryParse(configuredKey, true, out KeyCode key))
             return key;
 
-        Log.LogWarning($"{settingName} \"{entry.Value}\" is not a key name; falling back to {defaultKey}.");
+        Log.Warning($"{settingName} \"{configuredKey}\" is not a key name; falling back to {defaultKey}.");
         return defaultKey;
-    }
-
-    private ConfigEntry<float>[] BindMarginPerAnchor(string settingName, float[] defaults, string purpose)
-    {
-        ConfigEntry<float>[] entries = new ConfigEntry<float>[defaults.Length];
-
-        for (int anchorIndex = 0; anchorIndex < defaults.Length; anchorIndex++)
-        {
-            BenchAnchorSide anchor = (BenchAnchorSide)anchorIndex;
-
-            entries[anchorIndex] = Config.Bind("Layout", $"{settingName}{anchor}", defaults[anchorIndex],
-                new ConfigDescription($"{purpose} Applies when packing against the {anchor} side.",
-                    new AcceptableValueRange<float>(0f, 0.4f)));
-        }
-
-        return entries;
     }
 }

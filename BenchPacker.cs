@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using BepInEx.Logging;
 using UnityEngine;
 
 namespace ReStoryBetterWorkbench;
@@ -10,8 +9,6 @@ internal static class BenchPacker
     private const float MinCellExtent = 0.001f;
     private const float MaxSideMarginFraction = 0.4f;
     private const float MaxTopMarginFraction = 0.8f;
-
-    private static ManualLogSource Log => BetterWorkbenchPlugin.Log;
 
     internal static Bounds UsableBounds(Bounds bench, float sideMargin, float topMargin)
     {
@@ -90,8 +87,8 @@ internal static class BenchPacker
             {
                 string firstSlotText = packedSlots.Count > 0 ? packedSlots[0].ToString() : "none";
 
-                Log.LogError($"Self-check FAILED for {expectation.Key}: {packedSlots.Count} cells, " +
-                             $"first {firstSlotText}, expected {expectation.Value}.");
+                Log.Error($"Self-check FAILED for {expectation.Key}: {packedSlots.Count} cells, " +
+                          $"first {firstSlotText}, expected {expectation.Value}.");
                 isValid = false;
             }
         }
@@ -103,7 +100,7 @@ internal static class BenchPacker
             || narrowRowSlots[2].x != narrowRowSlots[0].x
             || Mathf.Abs(narrowRowSlots[2].z - narrowRowSlots[0].z + 0.25f) > 0.001f)
         {
-            Log.LogError("Self-check FAILED: row width limit did not wrap the third part onto a new row.");
+            Log.Error("Self-check FAILED: row width limit did not wrap the third part onto a new row.");
             isValid = false;
         }
 
@@ -114,7 +111,7 @@ internal static class BenchPacker
             || Mathf.Abs(insetBounds.max.z - 0.3f) > 0.001f
             || Mathf.Abs(insetBounds.min.z + 0.5f) > 0.001f)
         {
-            Log.LogError($"Self-check FAILED: margins gave min {insetBounds.min} max {insetBounds.max}.");
+            Log.Error($"Self-check FAILED: margins gave min {insetBounds.min} max {insetBounds.max}.");
             isValid = false;
         }
 
@@ -122,7 +119,7 @@ internal static class BenchPacker
 
         if (crushedBounds.size.x <= 0f || crushedBounds.size.z <= 0f)
         {
-            Log.LogError($"Self-check FAILED: oversized margins collapsed the bench to {crushedBounds.size}.");
+            Log.Error($"Self-check FAILED: oversized margins collapsed the bench to {crushedBounds.size}.");
             isValid = false;
         }
 
@@ -131,7 +128,7 @@ internal static class BenchPacker
 
         if (oversizedPartSlots.Count != 0)
         {
-            Log.LogError($"Self-check FAILED: a part wider than the bench was placed at {oversizedPartSlots[0]}.");
+            Log.Error($"Self-check FAILED: a part wider than the bench was placed at {oversizedPartSlots[0]}.");
             isValid = false;
         }
 
@@ -140,7 +137,7 @@ internal static class BenchPacker
         if (Mathf.Abs(diagonalSize.x - Mathf.Sqrt(2f)) > 0.001f
             || Mathf.Abs(diagonalSize.z - Mathf.Sqrt(2f)) > 0.001f)
         {
-            Log.LogError($"Self-check FAILED: a part rotated 45 degrees measured {diagonalSize}.");
+            Log.Error($"Self-check FAILED: a part rotated 45 degrees measured {diagonalSize}.");
             isValid = false;
         }
 
