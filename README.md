@@ -12,14 +12,31 @@ table, highlights them, and makes the notepad parts list easier to read.
 
 ## Requirements
 
-- **ReStory: Chill Electronics Repairs**
-- **BepInEx 5.x** (x64, Unity **Mono** build). Tested against BepInEx 5.4.23.5.
+  - **MelonLoader** latest, or
+  - **BepInEx 5.4.23.5**.
 
-## Installation
+## Installation (MelonLoader)
 
-1. Install **BepInEx 5.x (x64, Unity Mono)** into your ReStory folder, the one containing
-   `Restory.exe`. Get it from [GitHub](https://github.com/BepInEx/BepInEx/releases) and follow the install
-   instructions on its page.
+1. Download **`MelonLoader.Installer.exe`** from the
+   [MelonLoader releases page](https://github.com/LavaGang/MelonLoader/releases/latest) and run it. Click
+   **Select** and point it at your `Restory.exe`, leave the latest version selected, then hit **Install**.
+   By default the game is at
+   `(YourDrive):\Program Files (x86)\Steam\steamapps\common\Restory\Restory.exe`.
+
+2. Launch the game once, then quit. MelonLoader creates its `Mods` and `UserData` folders on first run.
+
+3. Extract this mod's archive and move `ReStoryBetterWorkbench.dll` into `Mods\`, so it ends up at:
+
+   ```
+   ...\Restory\Mods\ReStoryBetterWorkbench.dll
+   ```
+
+## Installation (BepInEx)
+
+1. Download **`BepInEx_win_x64_5.4.23.5.zip`** from the
+   [BepInEx releases page](https://github.com/BepInEx/BepInEx/releases) and extract it into your ReStory
+   folder, the one containing `Restory.exe`. Any newer 5.4.x release works too — just take the file with
+   `win_x64` in its name.
 
    Check it extracted correctly: `BepInEx\core\BepInEx.dll` should now exist. By default that is
    `(YourDrive):\Program Files (x86)\Steam\steamapps\common\Restory\BepInEx\core`.
@@ -40,10 +57,6 @@ That's all needed, if you want to confirm the mod loaded succesfully you can sta
    [Info   :ReStory Better Workbench] Loaded. Self-check passed.
    ```
 
-### Uninstalling
-
-Delete `BepInEx\plugins\ReStoryBetterWorkbench\` and `BepInEx\config\com.archives.restorybetterworkbench.cfg` as well. 
-
 ## Controls
 
 | Key                | Action                                                          |
@@ -58,6 +71,10 @@ The notepad parts list is sorted automatically; it has no key.
 
 Settings live in `...\BepInEx\config\com.archives.restorybetterworkbench.cfg`, created the first time you run
 the game with the mod installed. **Edit it while the game is closed**, it is read once at startup.
+
+On MelonLoader the same settings live in `...\UserData\MelonPreferences.cfg`, shared with your other mods,
+under `[ReStoryBetterWorkbenchHotkeys]` and `[ReStoryBetterWorkbenchLayout]` instead of the two sections
+below.
 
 ### `[Hotkeys]`
 
@@ -88,9 +105,16 @@ Requires the .NET SDK. The project references the game's own assemblies, so set 
 `ReStoryBetterWorkbench.csproj` to your ReStory install path if it differs from the default.
 
 ```
-dotnet build                # Debug   - verbose per-action logging, deploys to the game folder
-dotnet build -c Release     # Release - development logging compiled out, deploys to the game folder
+dotnet build                            # Debug   - verbose per-action logging
+dotnet build -c Release                 # Release - development logging compiled out
+dotnet build -c Release -p:Loader=Melon # the MelonLoader build of the same source
 ```
 
-Both configurations copy the DLL straight into `BepInEx\plugins\ReStoryBetterWorkbench\` and print which
-build was deployed.
+Without `-p:Loader=Melon` the build is the BepInEx plugin and lands in
+`BepInEx\plugins\ReStoryBetterWorkbench\`; with it, the MelonLoader mod lands in `Mods\`. Each build prints
+which loader and configuration it deployed. MelonLoader and Harmony come from NuGet, so only the BepInEx
+build needs BepInEx installed.
+
+The loader-specific code is confined to `Log.cs` and the two `BetterWorkbenchPlugin.*.cs` partials; the
+`MELONLOADER` compile symbol picks between them. **Build both flavors before releasing** — the compiler
+only checks the one that is switched on.
