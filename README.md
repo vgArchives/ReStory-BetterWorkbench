@@ -27,7 +27,8 @@ table, highlights them, and makes the notepad parts list easier to read.
 2. Launch the game once from Steam, then quit. BepInEx creates its `plugins` and `config` folders on first
    run.
 
-3. Extract this mod's archive into the same ReStory folder, so the DLL ends up at:
+3. Extract this mod's archive and move the `RestoryBenchOrganizer` folder into `BepInEx\plugins\`, so the
+   DLL ends up at:
 
    ```
    ...\Restory\BepInEx\plugins\RestoryBenchOrganizer\RestoryBenchOrganizer.dll
