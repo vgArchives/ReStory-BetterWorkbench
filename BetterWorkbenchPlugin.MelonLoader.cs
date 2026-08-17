@@ -12,7 +12,6 @@ namespace ReStoryBetterWorkbench;
 
 public partial class BetterWorkbenchPlugin : MelonMod
 {
-    // MelonPreferences.cfg is shared with every other installed mod, so the categories are prefixed.
     private const string HotkeysSection = "ReStoryBetterWorkbenchHotkeys";
     private const string LayoutSection = "ReStoryBetterWorkbenchLayout";
 
@@ -28,13 +27,12 @@ public partial class BetterWorkbenchPlugin : MelonMod
     private static MelonPreferences_Category _hotkeys;
     private static MelonPreferences_Category _layout;
 
+    public override void OnEarlyInitializeMelon() => Log.Source = LoggerInstance;
+
     public override void OnInitializeMelon()
     {
-        Log.Source = LoggerInstance;
-
         BindConfig();
 
-        // No PatchAll here: MelonLoader patches the mod assembly itself when the melon registers.
         RunSelfChecks();
     }
 

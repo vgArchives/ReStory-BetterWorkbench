@@ -3,9 +3,6 @@ using UnityEngine;
 
 namespace ReStoryBetterWorkbench;
 
-// Loader-neutral half of the entry point. The BepInEx and MelonLoader halves are the partials next
-// to this file; the MELONLOADER compile symbol picks exactly one of them. Everything both loaders
-// must agree on - setting names, defaults, ranges and descriptions - lives here so they can't drift.
 public partial class BetterWorkbenchPlugin
 {
     public const string PluginGuid = "com.archives.restorybetterworkbench";
@@ -100,7 +97,7 @@ public partial class BetterWorkbenchPlugin
 
     private static KeyCode ParseHotkey(string settingName, string configuredKey, KeyCode defaultKey)
     {
-        if (Enum.TryParse(configuredKey, true, out KeyCode key))
+        if (Enum.TryParse(configuredKey, true, out KeyCode key) && Enum.IsDefined(typeof(KeyCode), key))
             return key;
 
         Log.Warning($"{settingName} \"{configuredKey}\" is not a key name; falling back to {defaultKey}.");

@@ -10,7 +10,8 @@
     <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <NoWarn>$(NoWarn);CS0436</NoWarn>
+    <!-- NU1701: MelonLoader ships a net35 assembly; Unity's Mono runtime loads it fine. -->
+    <NoWarn>$(NoWarn);CS0436;NU1701</NoWarn>
 
     <GameDir>A:\Program Files (x86)\Steam\steamapps\common\Restory</GameDir>
     <Managed>$(GameDir)\Restory_Data\Managed</Managed>
@@ -29,8 +30,6 @@
     <!-- Own output and obj folders, so building one flavor doesn't clean the other one's DLL away. -->
     <OutputPath>bin\$(Configuration)\Melon\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\Melon\</IntermediateOutputPath>
-    <!-- MelonLoader ships a net35 assembly; Unity's Mono runtime loads it fine. -->
-    <NoWarn>$(NoWarn);NU1701</NoWarn>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Loader)' != 'Melon'">
@@ -38,15 +37,18 @@
     <Reference Include="$(GameDir)\BepInEx\core\0Harmony.dll" Private="false" />
   </ItemGroup>
 
-  <!-- NuGet only downloads these; they are referenced by path like every other assembly here, so
-       their .NET Standard facades never end up fighting Unity's own mscorlib. -->
-  <ItemGroup Condition="'$(Loader)' == 'Melon'">
-    <!-- 0.6.6 is the oldest supported loader and has no transitive deps; the API used here is
-         unchanged in 0.7.x, so the same DLL loads under both. -->
+  <!-- Restored for both flavors, so switching flavors can't leave the restore state behind. NuGet only
+       downloads these; they are referenced by path like every other assembly here, so their .NET Standard
+       facades never end up fighting Unity's own mscorlib. 0.6.6 is the oldest supported loader and has no
+       transitive deps; the API used here is unchanged in 0.7.x, so the same DLL loads under both. -->
+  <ItemGroup>
     <PackageReference Include="LavaGang.MelonLoader" Version="0.6.6"
                       GeneratePathProperty="true" ExcludeAssets="all" />
     <PackageReference Include="HarmonyX" Version="2.10.2"
                       GeneratePathProperty="true" ExcludeAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Loader)' == 'Melon'">
     <Reference Include="$(PkgLavaGang_MelonLoader)\lib\net35\MelonLoader.dll" Private="false" />
     <Reference Include="$(PkgHarmonyX)\lib\net35\0Harmony.dll" Private="false" />
   </ItemGroup>

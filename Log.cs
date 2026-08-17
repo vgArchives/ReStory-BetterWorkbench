@@ -6,7 +6,6 @@ using BepInEx.Logging;
 
 namespace ReStoryBetterWorkbench;
 
-// The only place in the mod that knows which loader is writing the log lines.
 internal static class Log
 {
 #if MELONLOADER

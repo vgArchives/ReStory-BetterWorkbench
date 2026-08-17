@@ -32,8 +32,6 @@ internal static class BenchOrganizer
     private static DisassembleStateMachine _stateMachine;
     private static DisassembleGameMode _gameMode;
 
-    public static void Organize() => Organize(BetterWorkbenchPlugin.Anchor.Value);
-
     public static void Organize(BenchAnchorSide anchor)
     {
         if (!IsReady(out string reason))

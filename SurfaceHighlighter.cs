@@ -10,22 +10,46 @@ namespace ReStoryBetterWorkbench;
 [HarmonyPatch]
 internal static class SurfaceHighlighter
 {
-    private static readonly AccessTools.FieldRef<ElementView, OutlinableAdapter> AdapterField =
-        AccessTools.FieldRefAccess<ElementView, OutlinableAdapter>("outlineAdapter");
+    private const string AdapterFieldName = "outlineAdapter";
+    private const string ElementFieldName = "element";
 
-    private static readonly AccessTools.FieldRef<ElementView, ElementBase> ElementField =
-        AccessTools.FieldRefAccess<ElementView, ElementBase>("element");
-
-    private static readonly MethodInfo ApplyConditionPreset =
-        AccessTools.DeclaredMethod(typeof(ElementView), "OutlineSelectedElement");
-
-    private static readonly MethodInfo ResolveSelection =
-        AccessTools.DeclaredMethod(typeof(ElementView), "ResolveSelectionStateChanged");
+    private static AccessTools.FieldRef<ElementView, OutlinableAdapter> _adapterField;
+    private static AccessTools.FieldRef<ElementView, ElementBase> _elementField;
+    private static MethodInfo _applyConditionPreset;
+    private static MethodInfo _resolveSelection;
 
     internal static bool IsOn;
 
+    private static bool Prepare()
+    {
+        _applyConditionPreset = AccessTools.DeclaredMethod(typeof(ElementView), "OutlineSelectedElement");
+        _resolveSelection = AccessTools.DeclaredMethod(typeof(ElementView), "ResolveSelectionStateChanged");
+
+        bool hasEveryMember = _applyConditionPreset != null
+                              && _resolveSelection != null
+                              && AccessTools.Field(typeof(ElementView), AdapterFieldName) != null
+                              && AccessTools.Field(typeof(ElementView), ElementFieldName) != null;
+
+        if (!hasEveryMember)
+        {
+            Log.Warning("Bench highlights are disabled: ElementView is missing an outline field or "
+                        + "method, most likely renamed by a game update. "
+                        + "Bench organizing and the notepad features are unaffected.");
+
+            return false;
+        }
+
+        _adapterField = AccessTools.FieldRefAccess<ElementView, OutlinableAdapter>(AdapterFieldName);
+        _elementField = AccessTools.FieldRefAccess<ElementView, ElementBase>(ElementFieldName);
+
+        return true;
+    }
+
     internal static void Toggle()
     {
+        if (_elementField == null)
+            return;
+
         IsOn = !IsOn;
         RefreshAll();
         Log.Debug($"Bench highlights {(IsOn ? "on" : "off")}.");
@@ -58,14 +82,14 @@ internal static class SurfaceHighlighter
         foreach (ElementView view in
                  Object.FindObjectsByType<ElementView>(FindObjectsSortMode.None))
         {
-            ElementBase element = ElementField(view);
+            ElementBase element = _elementField(view);
 
             if (!element)
                 continue;
 
             if (!IsOn)
             {
-                ResolveSelection.Invoke(view, null);
+                _resolveSelection.Invoke(view, null);
                 continue;
             }
 
@@ -78,13 +102,13 @@ internal static class SurfaceHighlighter
 
     private static void Light(ElementView view)
     {
-        ApplyConditionPreset.Invoke(view, null);
-        AdapterField(view).IsActive = true;
+        _applyConditionPreset.Invoke(view, null);
+        _adapterField(view).IsActive = true;
     }
 
     private static IEnumerable<MethodBase> TargetMethods()
     {
-        yield return ResolveSelection;
+        yield return _resolveSelection;
         yield return AccessTools.DeclaredMethod(typeof(ThreadedElementView), "ResolveSelectionStateChanged");
         yield return AccessTools.DeclaredMethod(typeof(FlipElementView), "ResolveSelectionStateChanged");
     }
@@ -94,7 +118,7 @@ internal static class SurfaceHighlighter
         if (!IsOn)
             return;
 
-        ElementBase element = ElementField(__instance);
+        ElementBase element = _elementField(__instance);
 
         if (element && element.IsOnSurface && !element.IsSelected)
         {
