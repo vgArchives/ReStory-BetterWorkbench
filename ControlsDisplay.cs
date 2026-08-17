@@ -187,6 +187,7 @@ internal static class ControlsDisplay
         if (rowLabel == null || icon == null)
         {
             Log.LogWarning($"Cloned controls row {rowName} is missing its label or icon; leaving it as-is.");
+            Object.Destroy(row);
             return false;
         }
 
