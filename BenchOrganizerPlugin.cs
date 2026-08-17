@@ -56,9 +56,6 @@ public class BenchOrganizerPlugin : BaseUnityPlugin
         }
     }
 
-    /// Chatty per-action logging. Compiled away entirely in Release builds --
-    /// call and arguments both vanish, so string interpolation never runs.
-    /// Warnings and errors are never routed through here; players need those.
     [System.Diagnostics.Conditional("DEBUG")]
     internal static void LogDebug(string message) => Log.LogInfo(message);
 
