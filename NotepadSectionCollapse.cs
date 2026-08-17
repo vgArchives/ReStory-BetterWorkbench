@@ -1,5 +1,8 @@
 using BepInEx.Logging;
+using FMODUnity;
 using HarmonyLib;
+using Restory.Audio;
+using Restory.UI.Presenters.Notepad;
 using Restory.UI.Views.Notepad;
 using TMPro;
 using UnityEngine;
@@ -20,6 +23,8 @@ internal static class NotepadSectionCollapse
     private static readonly CollapsibleSection SurfacePartsSection = new CollapsibleSection();
 
     private static ScrollRect _scroll;
+    private static IAudioPlayerService _audioPlayer;
+    private static EventReference _clickSound;
 
     private static ManualLogSource Log => BenchOrganizerPlugin.Log;
 
@@ -52,6 +57,8 @@ internal static class NotepadSectionCollapse
             return;
 
         _scroll = __instance.GetComponentInChildren<ScrollRect>(true);
+
+        CaptureClickSound(__instance);
 
         if (_scroll == null)
         {
@@ -126,8 +133,36 @@ internal static class NotepadSectionCollapse
         return glyphsByPreference[glyphsByPreference.Length - 1].ToString();
     }
 
-    private static T ReadField<T>(object target, string fieldName) where T : class =>
-        AccessTools.Field(target.GetType(), fieldName)?.GetValue(target) as T;
+    private static void CaptureClickSound(GUI_NotepadElementsPanelView view)
+    {
+        if (_audioPlayer != null && !_clickSound.IsNull)
+            return;
+
+        GUI_NotepadElementsPanelSFX panelSfx = view.GetComponentInParent<GUI_NotepadElementsPanelSFX>(true);
+
+        _audioPlayer = ReadField<IAudioPlayerService>(panelSfx, "audioPlayer");
+        _clickSound = ReadField<EventReference>(panelSfx, "itemSelectedSound");
+
+        if (_audioPlayer == null || _clickSound.IsNull)
+        {
+            BenchOrganizerPlugin.LogDebug("Notepad collapse click sound is unavailable.");
+        }
+    }
+
+    private static void PlayClickSound()
+    {
+        if (_audioPlayer == null || _clickSound.IsNull)
+            return;
+
+        _audioPlayer.PlaySoundEventOneShot(_clickSound);
+    }
+
+    private static T ReadField<T>(object target, string fieldName)
+    {
+        object fieldValue = target == null ? null : AccessTools.Field(target.GetType(), fieldName)?.GetValue(target);
+
+        return fieldValue is T typed ? typed : default;
+    }
 
     private sealed class CollapsibleSection
     {
@@ -154,6 +189,7 @@ internal static class NotepadSectionCollapse
         {
             _isCollapsed = !_isCollapsed;
             Apply();
+            PlayClickSound();
 
             if (_scroll != null)
             {

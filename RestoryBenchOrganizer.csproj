@@ -25,6 +25,8 @@
     <Reference Include="$(Managed)\System.Core.dll" Private="false" />
     <Reference Include="$(Managed)\UnityEngine*.dll" Private="false" />
     <Reference Include="$(Managed)\Unity.TextMeshPro.dll" Private="false" />
+    <!-- FMOD EventReference, for playing the game's own UI click sound. -->
+    <Reference Include="$(Managed)\FMODUnity.dll" Private="false" />
     <!-- Rewired KeyboardKeyCode, for looking up the game's own key glyph sprites. -->
     <Reference Include="$(Managed)\Rewired_Core.dll" Private="false" />
     <!-- ElementInfo -> RestoryEntityInfoBase -> Odin's SerializedScriptableObject. -->
