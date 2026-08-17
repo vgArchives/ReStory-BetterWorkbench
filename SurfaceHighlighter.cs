@@ -5,7 +5,7 @@ using Restory.Gameplay.Common;
 using Restory.Gameplay.Elements;
 using UnityEngine;
 
-namespace RestoryBenchOrganizer;
+namespace ReStoryBetterWorkbench;
 
 [HarmonyPatch]
 internal static class SurfaceHighlighter
@@ -28,7 +28,7 @@ internal static class SurfaceHighlighter
     {
         IsOn = !IsOn;
         RefreshAll();
-        BenchOrganizerPlugin.LogDebug($"Bench highlights {(IsOn ? "on" : "off")}.");
+        BetterWorkbenchPlugin.LogDebug($"Bench highlights {(IsOn ? "on" : "off")}.");
     }
 
     internal static void Reset(string reason)
@@ -37,7 +37,7 @@ internal static class SurfaceHighlighter
             return;
 
         IsOn = false;
-        BenchOrganizerPlugin.LogDebug($"Bench highlights off ({reason}).");
+        BetterWorkbenchPlugin.LogDebug($"Bench highlights off ({reason}).");
     }
 
     internal static void LightElement(ElementBase element)

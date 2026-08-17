@@ -8,7 +8,7 @@ using Restory.Gameplay.Soldering;
 using Restory.UI.Presenters.Notepad;
 using UnityEngine;
 
-namespace RestoryBenchOrganizer;
+namespace ReStoryBetterWorkbench;
 
 [HarmonyPatch]
 internal static class NotepadPartsSorter
@@ -18,7 +18,7 @@ internal static class NotepadPartsSorter
     private const int CleaningRank = 2;
     private const int ReadyRank = 3;
 
-    private static ManualLogSource Log => BenchOrganizerPlugin.Log;
+    private static ManualLogSource Log => BetterWorkbenchPlugin.Log;
 
     internal static bool SelfCheck()
     {

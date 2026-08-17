@@ -8,7 +8,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace RestoryBenchOrganizer;
+namespace ReStoryBetterWorkbench;
 
 [HarmonyPatch]
 internal static class NotepadSectionCollapse
@@ -26,7 +26,7 @@ internal static class NotepadSectionCollapse
     private static IAudioPlayerService _audioPlayer;
     private static EventReference _clickSound;
 
-    private static ManualLogSource Log => BenchOrganizerPlugin.Log;
+    private static ManualLogSource Log => BetterWorkbenchPlugin.Log;
 
     private static bool Prepare()
     {
@@ -145,7 +145,7 @@ internal static class NotepadSectionCollapse
 
         if (_audioPlayer == null || _clickSound.IsNull)
         {
-            BenchOrganizerPlugin.LogDebug("Notepad collapse click sound is unavailable.");
+            BetterWorkbenchPlugin.LogDebug("Notepad collapse click sound is unavailable.");
         }
     }
 
@@ -197,7 +197,7 @@ internal static class NotepadSectionCollapse
                 _scroll.verticalNormalizedPosition = 1f;
             }
 
-            BenchOrganizerPlugin.LogDebug($"Notepad section {(_isCollapsed ? "collapsed" : "expanded")}.");
+            BetterWorkbenchPlugin.LogDebug($"Notepad section {(_isCollapsed ? "collapsed" : "expanded")}.");
         }
     }
 }

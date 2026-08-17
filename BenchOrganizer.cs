@@ -12,7 +12,7 @@ using Restory.Gameplay.GameCursor;
 using Restory.Gameplay.Workplace;
 using UnityEngine;
 
-namespace RestoryBenchOrganizer;
+namespace ReStoryBetterWorkbench;
 
 [HarmonyPatch]
 internal static class BenchOrganizer
@@ -33,15 +33,15 @@ internal static class BenchOrganizer
     private static DisassembleStateMachine _stateMachine;
     private static DisassembleGameMode _gameMode;
 
-    private static ManualLogSource Log => BenchOrganizerPlugin.Log;
+    private static ManualLogSource Log => BetterWorkbenchPlugin.Log;
 
-    public static void Organize() => Organize(BenchOrganizerPlugin.Anchor.Value);
+    public static void Organize() => Organize(BetterWorkbenchPlugin.Anchor.Value);
 
     public static void Organize(BenchAnchorSide anchor)
     {
         if (!IsReady(out string reason))
         {
-            BenchOrganizerPlugin.LogDebug($"Organize skipped: {reason}.");
+            BetterWorkbenchPlugin.LogDebug($"Organize skipped: {reason}.");
             return;
         }
 
@@ -62,16 +62,16 @@ internal static class BenchOrganizer
 
         if (parts.Count == 0)
         {
-            BenchOrganizerPlugin.LogDebug("Organize skipped: no loose parts on the bench.");
+            BetterWorkbenchPlugin.LogDebug("Organize skipped: no loose parts on the bench.");
             return;
         }
 
         Bounds bench = BenchPacker.WorldBounds(_surface.SurfaceBoundary);
         Bounds usable = BenchPacker.UsableBounds(bench,
-            BenchOrganizerPlugin.SideMarginFor(anchor),
-            BenchOrganizerPlugin.TopMarginFor(anchor));
+            BetterWorkbenchPlugin.SideMarginFor(anchor),
+            BetterWorkbenchPlugin.TopMarginFor(anchor));
 
-        float gap = BenchOrganizerPlugin.CellGap.Value;
+        float gap = BetterWorkbenchPlugin.CellGap.Value;
         float slotY = _surface.DefaultPlacementPosition.y;
         ControlsDisplay.PlaceAwayFrom(anchor, bench);
 
@@ -135,9 +135,9 @@ internal static class BenchOrganizer
 
         int screwsReturned = ReturnStrayScrewsToBin();
 
-        BenchOrganizerPlugin.LogDebug(
+        BetterWorkbenchPlugin.LogDebug(
             $"{anchor}: {result.Packed} packed, {result.Unplaced.Count} overflow, {strandedCount} stranded, " +
-            $"{screwsReturned} screws re-binned (slack {BenchOrganizerPlugin.ShelfSlack.Value:F2} -> " +
+            $"{screwsReturned} screws re-binned (slack {BetterWorkbenchPlugin.ShelfSlack.Value:F2} -> " +
             $"row width {usedRowWidth:F2}, pass {passNumber} of {candidateWidths.Length}).");
     }
 
@@ -251,7 +251,7 @@ internal static class BenchOrganizer
 
         Vector3 castCentre = slot + placementData.BoxColliderCenter;
         Vector3 halfExtents = placementData.BoxColliderSize * 0.5f
-                              + Vector3.one * BenchOrganizerPlugin.SafetyMargin.Value;
+                              + Vector3.one * BetterWorkbenchPlugin.SafetyMargin.Value;
 
         return Physics.BoxCastNonAlloc(castCentre, halfExtents, placementData.PlacementDirection,
             CastHits, placementData.PlacementRotation, SlotCastDistance, BlockingLayers) == 0;
@@ -276,7 +276,7 @@ internal static class BenchOrganizer
             widestPart = Mathf.Max(widestPart, size.x + gap);
         }
 
-        area *= BenchOrganizerPlugin.ShelfSlack.Value;
+        area *= BetterWorkbenchPlugin.ShelfSlack.Value;
 
         float benchAspect = bounds.size.x / Mathf.Max(bounds.size.z, MinBenchDepth);
         float rowWidth = Mathf.Sqrt(area * benchAspect);

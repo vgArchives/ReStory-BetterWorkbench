@@ -1,4 +1,4 @@
-# ReStory Bench Organizer
+# ReStory Better Workbench
 
 A quality-of-life mod for the **ReStory** workbench. It organizes the parts on the
 table, highlights them, and makes the notepad parts list easier to read.
@@ -27,22 +27,22 @@ table, highlights them, and makes the notepad parts list easier to read.
 2. Launch the game once from Steam, then quit. BepInEx creates its `plugins` and `config` folders on first
    run.
 
-3. Extract this mod's archive and move the `RestoryBenchOrganizer` folder into `BepInEx\plugins\`, so the
+3. Extract this mod's archive and move the `ReStoryBetterWorkbench` folder into `BepInEx\plugins\`, so the
    DLL ends up at:
 
    ```
-   ...\Restory\BepInEx\plugins\RestoryBenchOrganizer\RestoryBenchOrganizer.dll
+   ...\Restory\BepInEx\plugins\ReStoryBetterWorkbench\ReStoryBetterWorkbench.dll
    ```
 
 That's all needed, if you want to confirm the mod loaded succesfully you can start the game and check the log at `...\BepInEx\LogOutput.log`. It should contain:
 
    ```
-   [Info   :ReStory Bench Organizer] Loaded. Self-check passed.
+   [Info   :ReStory Better Workbench] Loaded. Self-check passed.
    ```
 
 ### Uninstalling
 
-Delete `BepInEx\plugins\RestoryBenchOrganizer\` and `BepInEx\config\com.archives.restorybenchorganizer.cfg` as well. 
+Delete `BepInEx\plugins\ReStoryBetterWorkbench\` and `BepInEx\config\com.archives.restorybetterworkbench.cfg` as well. 
 
 ## Controls
 
@@ -56,7 +56,7 @@ The notepad parts list is sorted automatically; it has no key.
 
 ## Configuration
 
-Settings live in `...\BepInEx\config\com.archives.restorybenchorganizer.cfg`, created the first time you run
+Settings live in `...\BepInEx\config\com.archives.restorybetterworkbench.cfg`, created the first time you run
 the game with the mod installed. **Edit it while the game is closed**, it is read once at startup.
 
 ### `[Hotkeys]`
@@ -85,12 +85,12 @@ Both take any Unity KeyCode name, e.g. `F`, `G`, `R`, `Tab`, `F6`.
 ## Building from source
 
 Requires the .NET SDK. The project references the game's own assemblies, so set `GameDir` in
-`RestoryBenchOrganizer.csproj` to your ReStory install path if it differs from the default.
+`ReStoryBetterWorkbench.csproj` to your ReStory install path if it differs from the default.
 
 ```
 dotnet build                # Debug   - verbose per-action logging, deploys to the game folder
 dotnet build -c Release     # Release - development logging compiled out, deploys to the game folder
 ```
 
-Both configurations copy the DLL straight into `BepInEx\plugins\RestoryBenchOrganizer\` and print which
+Both configurations copy the DLL straight into `BepInEx\plugins\ReStoryBetterWorkbench\` and print which
 build was deployed.

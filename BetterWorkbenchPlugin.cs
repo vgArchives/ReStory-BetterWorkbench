@@ -7,12 +7,12 @@ using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
 
-namespace RestoryBenchOrganizer;
+namespace ReStoryBetterWorkbench;
 
-[BepInPlugin(PluginGuid, "ReStory Bench Organizer", "1.0.0")]
-public class BenchOrganizerPlugin : BaseUnityPlugin
+[BepInPlugin(PluginGuid, "ReStory Better Workbench", "1.0.0")]
+public class BetterWorkbenchPlugin : BaseUnityPlugin
 {
-    public const string PluginGuid = "com.archives.restorybenchorganizer";
+    public const string PluginGuid = "com.archives.restorybetterworkbench";
     private const string SectionSeparator = "# ----------------------------------------------------------------";
 
     internal static KeyCode OrganizeKey;

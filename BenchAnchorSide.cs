@@ -1,4 +1,4 @@
-namespace RestoryBenchOrganizer;
+namespace ReStoryBetterWorkbench;
 
 public enum BenchAnchorSide
 {

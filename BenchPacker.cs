@@ -3,7 +3,7 @@ using System.Linq;
 using BepInEx.Logging;
 using UnityEngine;
 
-namespace RestoryBenchOrganizer;
+namespace ReStoryBetterWorkbench;
 
 internal static class BenchPacker
 {
@@ -11,7 +11,7 @@ internal static class BenchPacker
     private const float MaxSideMarginFraction = 0.4f;
     private const float MaxTopMarginFraction = 0.8f;
 
-    private static ManualLogSource Log => BenchOrganizerPlugin.Log;
+    private static ManualLogSource Log => BetterWorkbenchPlugin.Log;
 
     internal static Bounds UsableBounds(Bounds bench, float sideMargin, float topMargin)
     {

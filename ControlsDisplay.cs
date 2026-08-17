@@ -9,7 +9,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace RestoryBenchOrganizer;
+namespace ReStoryBetterWorkbench;
 
 [HarmonyPatch]
 internal static class ControlsDisplay
@@ -25,7 +25,7 @@ internal static class ControlsDisplay
     private static bool _isShown;
     private static WorkSurface _surface;
 
-    private static ManualLogSource Log => BenchOrganizerPlugin.Log;
+    private static ManualLogSource Log => BetterWorkbenchPlugin.Log;
 
     internal static void AddRows(WorkSurface workSurface)
     {
@@ -65,7 +65,7 @@ internal static class ControlsDisplay
             out _highlightsLabel, out _highlightsKeyLabel);
 
         RefreshRows();
-        BenchOrganizerPlugin.LogDebug("Controls display rows added.");
+        BetterWorkbenchPlugin.LogDebug("Controls display rows added.");
     }
 
     internal static void PlaceAwayFrom(BenchAnchorSide partsSide, Bounds bench)
@@ -84,7 +84,7 @@ internal static class ControlsDisplay
 
         float mirroredX = 2f * bench.center.x - _displayHome.x;
         float outwardOffset =
-            Mathf.Sign(mirroredX - bench.center.x) * BenchOrganizerPlugin.ControlsDisplayOffset.Value;
+            Mathf.Sign(mirroredX - bench.center.x) * BetterWorkbenchPlugin.ControlsDisplayOffset.Value;
 
         _display.transform.position =
             new Vector3(mirroredX + outwardOffset, _displayHome.y, _displayHome.z);
@@ -163,7 +163,7 @@ internal static class ControlsDisplay
 
         if (_organizeKeyLabel != null)
         {
-            _organizeKeyLabel.text = BenchOrganizerPlugin.OrganizeKey.ToString();
+            _organizeKeyLabel.text = BetterWorkbenchPlugin.OrganizeKey.ToString();
         }
 
         if (_highlightsLabel != null)
@@ -173,7 +173,7 @@ internal static class ControlsDisplay
 
         if (_highlightsKeyLabel != null)
         {
-            _highlightsKeyLabel.text = BenchOrganizerPlugin.HighlightsKey.ToString();
+            _highlightsKeyLabel.text = BetterWorkbenchPlugin.HighlightsKey.ToString();
         }
     }
 
