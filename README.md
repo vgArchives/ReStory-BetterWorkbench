@@ -74,8 +74,16 @@ Settings live in `...\BepInEx\config\com.archives.restorybetterworkbench.cfg`, c
 the game with the mod installed. **Edit it while the game is closed**, it is read once at startup.
 
 On MelonLoader the same settings live in `...\UserData\MelonPreferences.cfg`, shared with your other mods,
-under `[ReStoryBetterWorkbenchHotkeys]` and `[ReStoryBetterWorkbenchLayout]` instead of the two sections
-below.
+under `[ReStoryBetterWorkbenchGeneral]`, `[ReStoryBetterWorkbenchHotkeys]` and
+`[ReStoryBetterWorkbenchLayout]` instead of the three sections below.
+
+### `[General]`
+
+| Setting       | Default | Description                                                                          |
+|---------------|---------|--------------------------------------------------------------------------------------|
+| `UpdateCheck` | `true`  | Checks once at startup whether a newer release exists. |
+
+The check reads the latest release tag from `api.github.com`. Set it to `false` to keep the mod completely offline.
 
 ### `[Hotkeys]`
 
