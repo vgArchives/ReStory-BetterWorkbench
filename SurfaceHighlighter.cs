@@ -17,6 +17,7 @@ internal static class SurfaceHighlighter
     private static AccessTools.FieldRef<ElementView, ElementBase> _elementField;
     private static MethodInfo _applyConditionPreset;
     private static MethodInfo _resolveSelection;
+    private static MethodInfo _resolveHighlight;
 
     internal static bool IsOn;
 
@@ -24,9 +25,11 @@ internal static class SurfaceHighlighter
     {
         _applyConditionPreset = AccessTools.DeclaredMethod(typeof(ElementView), "OutlineSelectedElement");
         _resolveSelection = AccessTools.DeclaredMethod(typeof(ElementView), "ResolveSelectionStateChanged");
+        _resolveHighlight = AccessTools.DeclaredMethod(typeof(ElementView), "ResolveHighlightedStateChanged");
 
         bool hasEveryMember = _applyConditionPreset != null
                               && _resolveSelection != null
+                              && _resolveHighlight != null
                               && AccessTools.Field(typeof(ElementView), AdapterFieldName) != null
                               && AccessTools.Field(typeof(ElementView), ElementFieldName) != null;
 
@@ -109,6 +112,7 @@ internal static class SurfaceHighlighter
     private static IEnumerable<MethodBase> TargetMethods()
     {
         yield return _resolveSelection;
+        yield return _resolveHighlight;
         yield return AccessTools.DeclaredMethod(typeof(ThreadedElementView), "ResolveSelectionStateChanged");
         yield return AccessTools.DeclaredMethod(typeof(FlipElementView), "ResolveSelectionStateChanged");
     }
