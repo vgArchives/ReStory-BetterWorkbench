@@ -33,18 +33,22 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Loader)' != 'Melon'">
-    <Reference Include="$(GameDir)\BepInEx\core\BepInEx.dll" Private="false" />
-    <Reference Include="$(GameDir)\BepInEx\core\0Harmony.dll" Private="false" />
+    <Reference Include="$(PkgBepInEx_BaseLib)\lib\net35\BepInEx.dll" Private="false" />
+    <Reference Include="$(PkgHarmonyX)\lib\net35\0Harmony.dll" Private="false" />
   </ItemGroup>
 
   <!-- Restored for both flavors, so switching flavors can't leave the restore state behind. NuGet only
        downloads these; they are referenced by path like every other assembly here, so their .NET Standard
        facades never end up fighting Unity's own mscorlib. 0.6.6 is the oldest supported loader and has no
-       transitive deps; the API used here is unchanged in 0.7.x, so the same DLL loads under both. -->
+       transitive deps; the API used here is unchanged in 0.7.x, so the same DLL loads under both. BepInEx
+       comes from its own feed (see NuGet.config) so the plugin builds without BepInEx installed; 5.4.21 is
+       API-identical to the 5.4.23.x the README asks for. -->
   <ItemGroup>
     <PackageReference Include="LavaGang.MelonLoader" Version="0.6.6"
                       GeneratePathProperty="true" ExcludeAssets="all" />
     <PackageReference Include="HarmonyX" Version="2.10.2"
+                      GeneratePathProperty="true" ExcludeAssets="all" />
+    <PackageReference Include="BepInEx.BaseLib" Version="5.4.21"
                       GeneratePathProperty="true" ExcludeAssets="all" />
   </ItemGroup>
 
