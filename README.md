@@ -9,6 +9,7 @@ table, highlights them, and makes the notepad parts list easier to read.
 - **Part highlights**: press **G** to highlight parts respecting their condition state.
 - **Notepad sorted by work left**: the notepad parts list is ordered to group what still needs doing.
 - **Collapsible notepad sections**: click a section header in the notepad to collapse its list content.
+- **Workbench clock**: the game clock shows on screen while you work at the bench.
 
 ## Requirements
 
