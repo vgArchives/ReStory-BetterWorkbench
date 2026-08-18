@@ -7,7 +7,7 @@ public partial class BetterWorkbenchPlugin
 {
     public const string PluginGuid = "com.archives.restorybetterworkbench";
     internal const string PluginName = "ReStory Better Workbench";
-    internal const string PluginVersion = "1.2.0";
+    internal const string PluginVersion = "1.2.1";
     internal const string PluginAuthor = "Archives";
 
     internal const string OrganizeKeyName = "OrganizeKey";
