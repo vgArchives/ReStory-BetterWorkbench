@@ -5,7 +5,7 @@
     <AssemblyName>ReStoryBetterWorkbench</AssemblyName>
     <RootNamespace>ReStoryBetterWorkbench</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <!-- Unity ships its own facades; don't drag in NuGet reference assemblies. -->
     <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
