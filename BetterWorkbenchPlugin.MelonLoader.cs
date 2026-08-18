@@ -12,6 +12,7 @@ namespace ReStoryBetterWorkbench;
 
 public partial class BetterWorkbenchPlugin : MelonMod
 {
+    private const string GeneralSection = "ReStoryBetterWorkbenchGeneral";
     private const string HotkeysSection = "ReStoryBetterWorkbenchHotkeys";
     private const string LayoutSection = "ReStoryBetterWorkbenchLayout";
 
@@ -20,10 +21,12 @@ public partial class BetterWorkbenchPlugin : MelonMod
     internal static MelonPreferences_Entry<float> SafetyMargin;
     internal static MelonPreferences_Entry<float> ShelfSlack;
     internal static MelonPreferences_Entry<float> ControlsDisplayOffset;
+    internal static MelonPreferences_Entry<bool> UpdateCheckEnabled;
 
     private static MelonPreferences_Entry<float>[] _topMarginsPerAnchor;
     private static MelonPreferences_Entry<float>[] _sideMarginsPerAnchor;
 
+    private static MelonPreferences_Category _general;
     private static MelonPreferences_Category _hotkeys;
     private static MelonPreferences_Category _layout;
 
@@ -34,14 +37,23 @@ public partial class BetterWorkbenchPlugin : MelonMod
         BindConfig();
 
         RunSelfChecks();
+
+        if (UpdateCheckEnabled.Value)
+        {
+            MelonCoroutines.Start(UpdateCheck.Run(PluginVersion));
+        }
     }
 
     public override void OnUpdate() => HandleHotkeys();
 
     private void BindConfig()
     {
+        _general = MelonPreferences.CreateCategory(GeneralSection, $"{PluginName} - General");
         _hotkeys = MelonPreferences.CreateCategory(HotkeysSection, $"{PluginName} - Hotkeys");
         _layout = MelonPreferences.CreateCategory(LayoutSection, $"{PluginName} - Layout");
+
+        UpdateCheckEnabled = _general.CreateEntry(UpdateCheckName, DefaultUpdateCheck,
+            description: UpdateCheckPurpose);
 
         OrganizeKey = BindHotkey(OrganizeKeyName, DefaultOrganizeKey, OrganizeKeyPurpose);
         HighlightsKey = BindHotkey(HighlightsKeyName, DefaultHighlightsKey, HighlightsKeyPurpose);

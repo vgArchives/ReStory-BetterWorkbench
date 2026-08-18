@@ -11,6 +11,7 @@ namespace ReStoryBetterWorkbench;
 [BepInPlugin(PluginGuid, PluginName, PluginVersion)]
 public partial class BetterWorkbenchPlugin : BaseUnityPlugin
 {
+    private const string GeneralSection = "General";
     private const string HotkeysSection = "Hotkeys";
     private const string LayoutSection = "Layout";
     private const string SectionSeparator = "# ----------------------------------------------------------------";
@@ -20,6 +21,7 @@ public partial class BetterWorkbenchPlugin : BaseUnityPlugin
     internal static ConfigEntry<float> SafetyMargin;
     internal static ConfigEntry<float> ShelfSlack;
     internal static ConfigEntry<float> ControlsDisplayOffset;
+    internal static ConfigEntry<bool> UpdateCheckEnabled;
 
     private static ConfigEntry<float>[] _topMarginsPerAnchor;
     private static ConfigEntry<float>[] _sideMarginsPerAnchor;
@@ -33,12 +35,20 @@ public partial class BetterWorkbenchPlugin : BaseUnityPlugin
         new Harmony(PluginGuid).PatchAll();
 
         RunSelfChecks();
+
+        if (UpdateCheckEnabled.Value)
+        {
+            StartCoroutine(UpdateCheck.Run(PluginVersion));
+        }
     }
 
     private void Update() => HandleHotkeys();
 
     private void BindConfig()
     {
+        UpdateCheckEnabled = Config.Bind(GeneralSection, UpdateCheckName, DefaultUpdateCheck,
+            UpdateCheckPurpose);
+
         OrganizeKey = BindHotkey(OrganizeKeyName, DefaultOrganizeKey, OrganizeKeyPurpose);
         HighlightsKey = BindHotkey(HighlightsKeyName, DefaultHighlightsKey, HighlightsKeyPurpose);
 

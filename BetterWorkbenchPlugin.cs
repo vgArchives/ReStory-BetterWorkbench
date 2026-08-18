@@ -19,6 +19,7 @@ public partial class BetterWorkbenchPlugin
     internal const string ControlsDisplayOffsetName = "ControlsDisplayOffset";
     internal const string TopMarginName = "TopMargin";
     internal const string SideMarginName = "SideMargin";
+    internal const string UpdateCheckName = "UpdateCheck";
 
     internal const string OrganizeKeyPurpose =
         "Packs the loose parts on the bench. Hold Shift to pack against the opposite side.";
@@ -34,6 +35,9 @@ public partial class BetterWorkbenchPlugin
     internal const string TopMarginPurpose = "Margin kept clear along the top edge of the bench.";
     internal const string SideMarginPurpose =
         "Margin kept clear along both the left and right edges of the bench.";
+    internal const string UpdateCheckPurpose =
+        "Looks up the latest release on github.com once at startup and logs a line when yours is older. "
+        + "Sends nothing about you. Set to false to keep the mod entirely offline.";
 
     internal const KeyCode DefaultOrganizeKey = KeyCode.F;
     internal const KeyCode DefaultHighlightsKey = KeyCode.G;
@@ -48,6 +52,7 @@ public partial class BetterWorkbenchPlugin
     internal const float DefaultControlsDisplayOffset = 0.07f;
     internal const float MaxControlsDisplayOffset = 0.4f;
     internal const float MaxMargin = 0.4f;
+    internal const bool DefaultUpdateCheck = true;
 
     internal static readonly float[] DefaultTopMargins = { 0.05f, 0.10f };
     internal static readonly float[] DefaultSideMargins = { 0.05f, 0.00f };
@@ -69,7 +74,8 @@ public partial class BetterWorkbenchPlugin
     {
         bool hasPackerPassed = BenchPacker.SelfCheck();
         bool hasSorterPassed = NotepadPartsSorter.SelfCheck();
-        bool haveChecksPassed = hasPackerPassed && hasSorterPassed;
+        bool hasUpdateCheckPassed = UpdateCheck.SelfCheck();
+        bool haveChecksPassed = hasPackerPassed && hasSorterPassed && hasUpdateCheckPassed;
 
         Log.Info(haveChecksPassed
             ? "Loaded. Self-check passed."
