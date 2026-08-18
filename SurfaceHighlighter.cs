@@ -67,7 +67,7 @@ internal static class SurfaceHighlighter
         Log.Debug($"Bench highlights off ({reason}).");
     }
 
-    internal static void LightElement(ElementBase element)
+    internal static void HighlightElement(ElementBase element)
     {
         if (!element || !element.IsOnSurface)
             return;
@@ -76,7 +76,7 @@ internal static class SurfaceHighlighter
 
         if (view != null)
         {
-            Light(view);
+            Highlight(view);
         }
     }
 
@@ -98,13 +98,16 @@ internal static class SurfaceHighlighter
 
             if (element.IsOnSurface)
             {
-                Light(view);
+                Highlight(view);
             }
         }
     }
 
-    private static void Light(ElementView view)
+    private static void Highlight(ElementView view)
     {
+        if (_elementField(view) is ThreadedElement)
+            return;
+
         _applyConditionPreset.Invoke(view, null);
         _adapterField(view).IsActive = true;
     }
@@ -126,7 +129,7 @@ internal static class SurfaceHighlighter
 
         if (element && element.IsOnSurface && !element.IsSelected)
         {
-            Light(__instance);
+            Highlight(__instance);
         }
     }
 }

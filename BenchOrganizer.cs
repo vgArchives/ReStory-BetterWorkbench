@@ -169,7 +169,7 @@ internal static class BenchOrganizer
         if (!SurfaceHighlighter.IsOn)
             return;
 
-        SurfaceHighlighter.LightElement(element);
+        SurfaceHighlighter.HighlightElement(element);
     }
 
     [HarmonyPostfix]
