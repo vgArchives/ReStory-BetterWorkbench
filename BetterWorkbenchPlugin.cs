@@ -75,7 +75,8 @@ public partial class BetterWorkbenchPlugin
         bool hasPackerPassed = BenchPacker.SelfCheck();
         bool hasSorterPassed = NotepadPartsSorter.SelfCheck();
         bool hasUpdateCheckPassed = UpdateCheck.SelfCheck();
-        bool haveChecksPassed = hasPackerPassed && hasSorterPassed && hasUpdateCheckPassed;
+        bool hasTooltipPassed = PackageTooltipDetails.SelfCheck();
+        bool haveChecksPassed = hasPackerPassed && hasSorterPassed && hasUpdateCheckPassed && hasTooltipPassed;
 
         Log.Info(haveChecksPassed
             ? "Loaded. Self-check passed."
