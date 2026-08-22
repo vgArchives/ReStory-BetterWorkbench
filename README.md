@@ -10,6 +10,7 @@ table, highlights them, and makes the notepad parts list easier to read.
 - **Notepad sorted by work left**: the notepad parts list is ordered to group what still needs doing.
 - **Collapsible notepad sections**: click a section header in the notepad to collapse its list content.
 - **Workbench clock**: the game clock shows on screen while you work at the bench.
+- **Package tooltips**: hovering a package shows the services it was ordered with, plus the day it is on for email orders.
 
 ## Requirements
 
@@ -66,7 +67,6 @@ That's all needed, if you want to confirm the mod loaded succesfully you can sta
 | **Shift + F**      | Packs the loose parts against the opposite side.                |
 | **G**              | Toggles the outline highlight on every part lying on the bench. |
 
-The notepad parts list is sorted automatically; it has no key.
 
 ## Configuration
 
@@ -119,11 +119,8 @@ dotnet build -c Release                 # Release - development logging compiled
 dotnet build -c Release -p:Loader=Melon # the MelonLoader build of the same source
 ```
 
-Without `-p:Loader=Melon` the build is the BepInEx plugin and lands in
-`BepInEx\plugins\ReStoryBetterWorkbench\`; with it, the MelonLoader mod lands in `Mods\`. Each build prints
-which loader and configuration it deployed. MelonLoader and Harmony come from NuGet, so only the BepInEx
-build needs BepInEx installed.
+The BepInEx build lands in `BepInEx\plugins\ReStoryBetterWorkbench\`, the MelonLoader one in `Mods\`.
+Neither loader needs to be installed to build: BepInEx, MelonLoader and Harmony all come from NuGet.
 
-The loader-specific code is confined to `Log.cs` and the two `BetterWorkbenchPlugin.*.cs` partials; the
-`MELONLOADER` compile symbol picks between them. **Build both flavors before releasing** — the compiler
-only checks the one that is switched on.
+Loader-specific code lives in `Log.cs` and the two `BetterWorkbenchPlugin.*.cs` partials, picked by the
+`MELONLOADER` symbol. **Build both before releasing** — only the switched-on one gets compiled.
