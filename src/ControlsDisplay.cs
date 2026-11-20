@@ -52,7 +52,9 @@ internal static class ControlsDisplay
             ? null
             : display.GetComponentInChildren<VerticalLayoutGroup>(true)?.transform;
 
-        if (rows == null || rows.childCount == 0)
+        GameObject gameRowTemplate = rows == null ? null : LastControlsRow(rows);
+
+        if (gameRowTemplate == null)
         {
             Log.Warning("Workbench controls display rows not found; skipping the hint rows.");
             return;
@@ -66,15 +68,15 @@ internal static class ControlsDisplay
         if (hasAlreadyAddedRowsToThisBench)
             return;
 
-        GameObject gameRowTemplate = rows.GetChild(rows.childCount - 1).gameObject;
+        int organizeRowIndex = gameRowTemplate.transform.GetSiblingIndex() + 1;
 
-        bool hasAddedOrganizeRow = TryCloneRow(gameRowTemplate, rows, OrganizeRowName,
+        bool hasAddedOrganizeRow = TryCloneRow(gameRowTemplate, rows, OrganizeRowName, organizeRowIndex,
             out _organizeLabel, out _organizeKeyLabel);
 
         if (!hasAddedOrganizeRow)
             return;
 
-        TryCloneRow(gameRowTemplate, rows, HighlightsRowName,
+        TryCloneRow(gameRowTemplate, rows, HighlightsRowName, organizeRowIndex + 1,
             out _highlightsLabel, out _highlightsKeyLabel);
 
         RefreshRows();
@@ -106,14 +108,13 @@ internal static class ControlsDisplay
     }
 
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(WorkSurface), nameof(WorkSurface.ToggleDisassembleControlsAdvices))]
-    private static void PositionOnShow(bool isActive)
+    [HarmonyPatch(typeof(WorkSurface), nameof(WorkSurface.ActivateDisassembleControlsAdvices))]
+    private static void PositionOnShow()
     {
-        bool wasShown = _isShown;
-        _isShown = isActive;
-
-        bool isHiddenToShownEdge = isActive && !wasShown;
+        bool isHiddenToShownEdge = !_isShown;
         bool hasNothingToPosition = _display == null || _surface == null;
+
+        _isShown = true;
 
         if (!isHiddenToShownEdge || hasNothingToPosition)
             return;
@@ -146,6 +147,13 @@ internal static class ControlsDisplay
         {
             PlaceAwayFrom(partsOnLeft > partsOnRight ? BenchAnchorSide.Left : BenchAnchorSide.Right, bench);
         }
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(WorkSurface), nameof(WorkSurface.DeactivateDisassembleControlsAdvices))]
+    private static void MarkHidden()
+    {
+        _isShown = false;
     }
 
     [HarmonyPostfix]
@@ -207,7 +215,20 @@ internal static class ControlsDisplay
         label.text = text;
     }
 
-    private static bool TryCloneRow(GameObject template, Transform rows, string rowName,
+    private static GameObject LastControlsRow(Transform rows)
+    {
+        for (int index = rows.childCount - 1; index >= 0; index--)
+        {
+            Transform row = rows.GetChild(index);
+
+            if (row.GetComponent<GUI_ControlsTypeGameObjectsSwitcher>() != null)
+                return row.gameObject;
+        }
+
+        return null;
+    }
+
+    private static bool TryCloneRow(GameObject template, Transform rows, string rowName, int siblingIndex,
         out TMP_Text label, out TMP_Text keyLabel)
     {
         label = null;
@@ -215,7 +236,7 @@ internal static class ControlsDisplay
 
         GameObject row = Object.Instantiate(template, rows);
         row.name = rowName;
-        row.transform.SetAsLastSibling();
+        row.transform.SetSiblingIndex(siblingIndex);
 
         UiClones.DisableInheritedLocalization(row);
 

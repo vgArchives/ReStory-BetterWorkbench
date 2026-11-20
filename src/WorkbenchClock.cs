@@ -29,7 +29,19 @@ internal static class WorkbenchClock
     private static Color _panelBaseColor;
 
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(WorkSurface), nameof(WorkSurface.ToggleDisassembleControlsAdvices))]
+    [HarmonyPatch(typeof(WorkSurface), nameof(WorkSurface.ActivateDisassembleControlsAdvices))]
+    private static void ShowWithBenchAdvices()
+    {
+        ToggleWithBenchAdvices(true);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(WorkSurface), nameof(WorkSurface.DeactivateDisassembleControlsAdvices))]
+    private static void HideWithBenchAdvices()
+    {
+        ToggleWithBenchAdvices(false);
+    }
+
     private static void ToggleWithBenchAdvices(bool isActive)
     {
         if (isActive && IsCompetitionRunning())
