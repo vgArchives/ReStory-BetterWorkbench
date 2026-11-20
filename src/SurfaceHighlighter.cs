@@ -73,11 +73,27 @@ internal static class SurfaceHighlighter
         if (!element || !element.IsOnSurface)
             return;
 
-        ElementView view = element.GetComponentInChildren<ElementView>(true);
+        ElementView view = FindView(element);
 
         if (view != null)
         {
             Highlight(view);
+        }
+    }
+
+    internal static void UnhighlightElement(ElementBase element)
+    {
+        if (!IsOn || !element)
+            return;
+
+        if (element is ThreadedElement)
+            return;
+
+        ElementView view = FindView(element);
+
+        if (view != null)
+        {
+            _resolveSelection.Invoke(view, null);
         }
     }
 
@@ -102,6 +118,17 @@ internal static class SurfaceHighlighter
                 Highlight(view);
             }
         }
+    }
+
+    private static ElementView FindView(ElementBase element)
+    {
+        foreach (ElementView view in element.GetComponentsInChildren<ElementView>(true))
+        {
+            if (_elementField(view) == element)
+                return view;
+        }
+
+        return null;
     }
 
     private static void Highlight(ElementView view)

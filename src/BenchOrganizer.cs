@@ -194,6 +194,13 @@ internal static class BenchOrganizer
     }
 
     [HarmonyPostfix]
+    [HarmonyPatch(typeof(WorkSurface), nameof(WorkSurface.RemoveElement))]
+    private static void UnlightElementLeavingBench(ElementBase element)
+    {
+        SurfaceHighlighter.UnhighlightElement(element);
+    }
+
+    [HarmonyPostfix]
     [HarmonyPatch(typeof(WorkSurface), nameof(WorkSurface.ClearElements))]
     private static void ResetHighlightsOnBenchCleared()
     {
