@@ -57,10 +57,15 @@
     <Reference Include="$(PkgHarmonyX)\lib\net35\0Harmony.dll" Private="false" />
   </ItemGroup>
 
-  <!-- The key frame drawn behind hotkey names in the bench controls display. -->
+  <!-- The key frame drawn behind hotkey names in the bench controls display, and the stick-click icons
+       shown in its place on a gamepad. -->
   <ItemGroup>
     <EmbeddedResource Include="Assets\KeyFrame.png"
                       LogicalName="ReStoryBetterWorkbench.Assets.KeyFrame.png" />
+    <EmbeddedResource Include="Assets\Left_Stick_Click.png"
+                      LogicalName="ReStoryBetterWorkbench.Assets.Left_Stick_Click.png" />
+    <EmbeddedResource Include="Assets\Right_Stick_Click.png"
+                      LogicalName="ReStoryBetterWorkbench.Assets.Right_Stick_Click.png" />
   </ItemGroup>
 
   <ItemGroup>

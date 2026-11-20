@@ -65,6 +65,12 @@ public partial class BetterWorkbenchPlugin : MelonMod
         OrganizeKey = BindHotkey(OrganizeKeyName, DefaultOrganizeKey, OrganizeKeyPurpose);
         HighlightsKey = BindHotkey(HighlightsKeyName, DefaultHighlightsKey, HighlightsKeyPurpose);
 
+        OrganizeButton = _hotkeys.CreateEntry(OrganizeButtonName, DefaultOrganizeButton,
+            description: OrganizeButtonPurpose).Value;
+
+        HighlightsButton = _hotkeys.CreateEntry(HighlightsButtonName, DefaultHighlightsButton,
+            description: HighlightsButtonPurpose).Value;
+
         Anchor = _layout.CreateEntry(AnchorName, DefaultAnchor, description: AnchorPurpose);
         CellGap = BindRanged(CellGapName, DefaultCellGap, CellGapPurpose, 0f, MaxCellGap);
         SafetyMargin = BindRanged(SafetyMarginName, DefaultSafetyMargin, SafetyMarginPurpose,

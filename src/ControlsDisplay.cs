@@ -2,6 +2,7 @@ using HarmonyLib;
 using Restory.Gameplay.Elements;
 using Restory.Gameplay.GameSettings.Observers;
 using Restory.Gameplay.Workplace;
+using Restory.Infrastructure.CommonServices;
 using Restory.UserInterface.CommonElements;
 using TMPro;
 using UnityEngine;
@@ -14,6 +15,8 @@ internal static class ControlsDisplay
 {
     private const float MinKeyWidth = 20f;
     private const float KeyHeight = 20f;
+
+    private const float ButtonIconSize = 30f;
 
     private const float KeyFaceSideInset = 4.5f;
     private const float KeyFaceTopInset = 1f;
@@ -30,12 +33,15 @@ internal static class ControlsDisplay
 
     private static TMP_Text _organizeLabel;
     private static TMP_Text _organizeKeyLabel;
+    private static Image _organizeButtonIcon;
     private static TMP_Text _highlightsLabel;
     private static TMP_Text _highlightsKeyLabel;
+    private static Image _highlightsButtonIcon;
     private static GameObject _display;
     private static Vector3 _displayHome;
     private static bool _isShown;
     private static WorkSurface _surface;
+    private static ControlsManager _controls;
     private static float _keyFrameOpacity = KeyFrameOpacityOnLeft;
 
     internal static void AddRows(WorkSurface workSurface)
@@ -76,9 +82,14 @@ internal static class ControlsDisplay
         if (!hasAddedOrganizeRow)
             return;
 
+        _organizeButtonIcon = AddButtonIcon(_organizeKeyLabel);
+
         TryCloneRow(gameRowTemplate, rows, HighlightsRowName, organizeRowIndex + 1,
             out _highlightsLabel, out _highlightsKeyLabel);
 
+        _highlightsButtonIcon = AddButtonIcon(_highlightsKeyLabel);
+
+        WatchControlsType();
         RefreshRows();
         Log.Debug("Controls display rows added.");
     }
@@ -171,12 +182,72 @@ internal static class ControlsDisplay
         RefreshRows();
     }
 
+    private static void WatchControlsType()
+    {
+        ControlsManager controls = Object.FindAnyObjectByType<ControlsManager>();
+
+        if (controls == null || controls == _controls)
+            return;
+
+        if (_controls != null)
+        {
+            _controls.OnControlsTypeChanged -= HandleControlsTypeChanged;
+        }
+
+        _controls = controls;
+        _controls.OnControlsTypeChanged += HandleControlsTypeChanged;
+    }
+
+    private static void HandleControlsTypeChanged(InputControlsType controlsType)
+    {
+        RefreshRows();
+    }
+
     private static void RefreshRows()
     {
         SetText(_organizeLabel, Strings.Organize);
-        SetKeyText(_organizeKeyLabel, BetterWorkbenchPlugin.OrganizeKey.ToString());
         SetText(_highlightsLabel, Strings.Highlights);
-        SetKeyText(_highlightsKeyLabel, BetterWorkbenchPlugin.HighlightsKey.ToString());
+
+        ShowHotkey(_organizeKeyLabel, _organizeButtonIcon, BetterWorkbenchPlugin.OrganizeKey,
+            BetterWorkbenchPlugin.OrganizeButton);
+
+        ShowHotkey(_highlightsKeyLabel, _highlightsButtonIcon, BetterWorkbenchPlugin.HighlightsKey,
+            BetterWorkbenchPlugin.HighlightsButton);
+    }
+
+    private static void ShowHotkey(TMP_Text keyLabel, Image buttonIcon, KeyCode key, BenchGamepadButton button)
+    {
+        bool canShowButtonArt = buttonIcon != null && IsShowingGamepadButton(button);
+        Sprite buttonArt = canShowButtonArt ? GamepadButtonArt.Icon(button) : null;
+        bool showsButtonArt = buttonArt != null;
+
+        if (buttonIcon != null)
+        {
+            buttonIcon.sprite = buttonArt;
+            buttonIcon.gameObject.SetActive(showsButtonArt);
+        }
+
+        if (keyLabel == null)
+            return;
+
+        keyLabel.transform.parent.gameObject.SetActive(!showsButtonArt);
+
+        if (!showsButtonArt)
+        {
+            SetKeyText(keyLabel, HotkeyName(key, button));
+        }
+    }
+
+    private static string HotkeyName(KeyCode key, BenchGamepadButton button)
+    {
+        return IsShowingGamepadButton(button) ? GamepadHotkeys.Label(button) : key.ToString();
+    }
+
+    private static bool IsShowingGamepadButton(BenchGamepadButton button)
+    {
+        bool isGamepadActive = _controls != null && _controls.ControlType == InputControlsType.Joystick;
+
+        return isGamepadActive && button != BenchGamepadButton.None;
     }
 
     private static void SetKeyText(TMP_Text keyLabel, string keyName)
@@ -255,6 +326,34 @@ internal static class ControlsDisplay
         label = rowLabel;
         keyLabel = PutKeyNameInIconSlot(icon.transform, rowLabel);
         return true;
+    }
+
+    private static Image AddButtonIcon(TMP_Text keyLabel)
+    {
+        const string ButtonIconName = "GamepadButtonIcon";
+
+        if (keyLabel == null)
+            return null;
+
+        Transform keySlot = keyLabel.transform.parent;
+
+        GameObject iconObject = new GameObject(ButtonIconName, typeof(RectTransform), typeof(Image),
+            typeof(LayoutElement));
+
+        iconObject.SetActive(false);
+        iconObject.layer = keySlot.gameObject.layer;
+        iconObject.transform.SetParent(keySlot.parent, worldPositionStays: false);
+        iconObject.transform.SetSiblingIndex(keySlot.GetSiblingIndex() + 1);
+
+        LayoutElement iconSize = iconObject.GetComponent<LayoutElement>();
+        iconSize.preferredWidth = ButtonIconSize;
+        iconSize.preferredHeight = ButtonIconSize;
+
+        Image icon = iconObject.GetComponent<Image>();
+        icon.preserveAspect = true;
+        icon.raycastTarget = false;
+
+        return icon;
     }
 
     private static void ApplyKeyFrameOpacity(bool isDisplayOnLeft)

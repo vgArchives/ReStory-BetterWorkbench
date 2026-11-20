@@ -7,6 +7,8 @@ and makes the notepad parts list easier to read.
 
 - Press F to pack every loose part into rows against one side of the bench.
 - Press G to highlight the parts on the bench, colored by their condition.
+- On a gamepad, click the right stick to pack the parts and the left stick to toggle the highlights. The
+  bench controls list shows R3 and L3 stick icons while you play with a gamepad.
 - The notepad's parts list groups what still needs doing.
 - Click a section header in the notepad to collapse that section's list.
 - The game clock stays on screen while you work at the bench.
@@ -62,11 +64,14 @@ contain:
 
 ## Controls
 
-| Key           | Action                                                          |
-|---------------|-----------------------------------------------------------------|
-| **F**         | Packs the loose parts on the bench.                             |
-| **Shift + F** | Packs the loose parts against the opposite side.                |
-| **G**         | Toggles the outline highlight on every part lying on the bench. |
+| Keyboard      | Gamepad     | Action                                                          |
+|---------------|-------------|-----------------------------------------------------------------|
+| **F**         | **R3**      | Packs the loose parts on the bench.                             |
+| **Shift + F** | Hold **R3** | Packs the loose parts against the opposite side.                |
+| **G**         | **L3**      | Toggles the outline highlight on every part lying on the bench. |
+
+R3 and L3 mean clicking the right or left stick in. They are the only gamepad buttons the game leaves free
+at the bench.
 
 ## Configuration
 
@@ -88,12 +93,15 @@ the network.
 
 ### `[Hotkeys]`
 
-Both take any Unity KeyCode name, e.g. `F`, `G`, `R`, `Tab`, `F6`.
+The two keys take any Unity KeyCode name, e.g. `F`, `G`, `R`, `Tab`, `F6`. The two gamepad buttons take
+`RightStickClick`, `LeftStickClick` or `None`, which turns that gamepad button off.
 
-| Setting         | Default | Description                                                                       |
-|-----------------|---------|-----------------------------------------------------------------------------------|
-| `OrganizeKey`   | `F`     | Packs the loose parts on the bench. Hold Shift to pack against the opposite side. |
-| `HighlightsKey` | `G`     | Toggles the outline highlight on every part lying on the bench.                   |
+| Setting            | Default           | Description                                                                                          |
+|--------------------|-------------------|------------------------------------------------------------------------------------------------------|
+| `OrganizeKey`      | `F`               | Packs the loose parts on the bench. Hold Shift to pack against the opposite side.                    |
+| `HighlightsKey`    | `G`               | Toggles the outline highlight on every part lying on the bench.                                      |
+| `OrganizeButton`   | `RightStickClick` | Gamepad button that packs the loose parts on the bench. Hold it to pack against the opposite side.   |
+| `HighlightsButton` | `LeftStickClick`  | Gamepad button that toggles the outline highlight on every part lying on the bench.                  |
 
 ### `[Layout]`
 
@@ -127,8 +135,8 @@ The BepInEx build lands in `BepInEx\plugins\ReStoryBetterWorkbench\`, the MelonL
 need neither loader installed to build. BepInEx, MelonLoader and Harmony all come from NuGet.
 
 Every compiled file lives in `src\`. The SDK's default glob finds them, so adding a file needs no change
-to `ReStoryBetterWorkbench.csproj`. The key frame art stays in `Assets\`, where the csproj embeds it by
-name.
+to `ReStoryBetterWorkbench.csproj`. The key frame and stick icon art stay in `Assets\`, where the csproj
+embeds them by name.
 
 Loader-specific code lives in `src\Log.cs` and the two `src\BetterWorkbenchPlugin.*.cs` partials, picked
 by the `MELONLOADER` symbol. **Build both before releasing.** Only the switched-on one gets compiled.

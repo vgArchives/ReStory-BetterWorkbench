@@ -56,6 +56,12 @@ public partial class BetterWorkbenchPlugin : BaseUnityPlugin
         OrganizeKey = BindHotkey(OrganizeKeyName, DefaultOrganizeKey, OrganizeKeyPurpose);
         HighlightsKey = BindHotkey(HighlightsKeyName, DefaultHighlightsKey, HighlightsKeyPurpose);
 
+        OrganizeButton = Config.Bind(HotkeysSection, OrganizeButtonName, DefaultOrganizeButton,
+            OrganizeButtonPurpose).Value;
+
+        HighlightsButton = Config.Bind(HotkeysSection, HighlightsButtonName, DefaultHighlightsButton,
+            HighlightsButtonPurpose).Value;
+
         Anchor = Config.Bind(LayoutSection, AnchorName, DefaultAnchor, AnchorPurpose);
         CellGap = Config.Bind(LayoutSection, CellGapName, DefaultCellGap, new ConfigDescription(
             CellGapPurpose, new AcceptableValueRange<float>(0f, MaxCellGap)));

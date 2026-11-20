@@ -12,6 +12,8 @@ public partial class BetterWorkbenchPlugin
 
     internal const string OrganizeKeyName = "OrganizeKey";
     internal const string HighlightsKeyName = "HighlightsKey";
+    internal const string OrganizeButtonName = "OrganizeButton";
+    internal const string HighlightsButtonName = "HighlightsButton";
     internal const string AnchorName = "PackAgainstSide";
     internal const string CellGapName = "CellGap";
     internal const string SafetyMarginName = "SafetyMargin";
@@ -27,6 +29,12 @@ public partial class BetterWorkbenchPlugin
 
     internal const string HighlightsKeyPurpose =
         "Toggles the outline highlight on every part lying on the bench.";
+
+    internal const string OrganizeButtonPurpose =
+        "Gamepad button that packs the loose parts on the bench. Hold it to pack against the opposite side.";
+
+    internal const string HighlightsButtonPurpose =
+        "Gamepad button that toggles the outline highlight on every part lying on the bench.";
 
     internal const string AnchorPurpose = "Bench side the parts are packed against.";
     internal const string CellGapPurpose = "Gap between packed parts, in meters.";
@@ -53,6 +61,8 @@ public partial class BetterWorkbenchPlugin
 
     internal const KeyCode DefaultOrganizeKey = KeyCode.F;
     internal const KeyCode DefaultHighlightsKey = KeyCode.G;
+    internal const BenchGamepadButton DefaultOrganizeButton = BenchGamepadButton.RightStickClick;
+    internal const BenchGamepadButton DefaultHighlightsButton = BenchGamepadButton.LeftStickClick;
     internal const BenchAnchorSide DefaultAnchor = BenchAnchorSide.Left;
     internal const float DefaultCellGap = 0.025f;
     internal const float MaxCellGap = 0.1f;
@@ -73,6 +83,8 @@ public partial class BetterWorkbenchPlugin
 
     internal static KeyCode OrganizeKey;
     internal static KeyCode HighlightsKey;
+    internal static BenchGamepadButton OrganizeButton;
+    internal static BenchGamepadButton HighlightsButton;
 
     internal static float TopMarginFor(BenchAnchorSide anchor)
     {
@@ -118,6 +130,27 @@ public partial class BetterWorkbenchPlugin
         }
 
         if (Input.GetKeyDown(HighlightsKey))
+        {
+            SurfaceHighlighter.Toggle();
+        }
+
+        HandleGamepadHotkeys();
+    }
+
+    private static void HandleGamepadHotkeys()
+    {
+        GamepadButtonPress organizePress = GamepadHotkeys.ReadTapOrHold(OrganizeButton);
+
+        if (organizePress == GamepadButtonPress.Tap)
+        {
+            BenchOrganizer.Organize(Anchor.Value);
+        }
+        else if (organizePress == GamepadButtonPress.Hold)
+        {
+            BenchOrganizer.Organize(Opposite(Anchor.Value));
+        }
+
+        if (GamepadHotkeys.WasPressed(HighlightsButton))
         {
             SurfaceHighlighter.Toggle();
         }
